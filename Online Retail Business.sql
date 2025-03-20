@@ -229,27 +229,62 @@ Join Customers C On C.CustomerID = O.CustomerID
 Order by OrderDate desc
 
 
---Query 10: Find the average price of products in each category
+--Query 10: Find the average price of products sold in each category
 
--- FYR: Query 6
--- SELECT p.ProductID, p.ProductName, c.CategoryName, p.Stock 
--- FROM Products p JOIN Categories c
--- ON p.CategoryID = c.CategoryID
--- WHERE Stock = 0;
+select CategoryName, Sum(OI.Price)/sum(Quantity) as Average_Price
+From Categories C
+Join Products P ON P.CategoryID = C.CategoryID
+Join Orderitems OI ON OI.ProductID = P.ProductID
+Group by CategoryName
+Order By CategoryName
+
+--Query X: Find the average price of products in each category
+
+Select P.CategoryID, C.CategoryName, AVG(P.Price) as Average
+from Products P
+Join Categories C on P.CategoryID = C.CategoryID
+Group by P.CategoryID,C.CategoryName
+
 
 --Query 11: List customers who have never placed an order
 
+Select O.CustomerID from Orders O
+Join Customers C on C.CustomerID = O.CustomerID
+where C.CustomerID not in (Select CustomerID from Orders)
 
 --Query 12: Retrieve the total quantity sold for each product
 
+Select P.ProductID, ProductName, Sum(Quantity) as Quantity_Sold
+From Products P
+Left Join OrderItems OI
+On OI.ProductID = P.ProductID
+Group By P.ProductID, ProductName
 
 --Query 13: Calculate the total revenue generated from each category
 
+Select C.CategoryID,CategoryName, Sum(OI.Price) as Total_Revenue
+from Categories C
+Join Products P on P.CategoryID = C.CategoryID
+Join OrderItems OI on OI.ProductID = P.ProductID
+Group by C.CategoryID,CategoryName
 
 --Query 14: Find the highest-priced product in each category
 
+Select CategoryID, CategoryName, ProductID, ProductName, Price from
+(Select C.CategoryID, CategoryName,ProductID, ProductName, Price, ROW_NUMBER() Over (Partition by CategoryName order by Price Desc) as rn
+From Categories C
+Join Products P on P.CategoryID = C.CategoryID) A
+where rn =1
+order by CategoryID
 
 --Query 15: Retrieve orders with a total amount greater than a specific value (e.g., $500)
+
+select O.OrderId, P.ProductID, ProductName, FirstName+' '+LastName as CustomerName, Quantity, OrderDate, P.Price,TotalAmount  from OrderItems OI
+Join Orders O on O.OrderId = OI.OrderID
+Join Products P on P.ProductID = OI.ProductID
+Join Customers C on C.CustomerID = O.CustomerID
+where TotalAmount >45
+
 
 --Query 16: List products along with the number of orders they appear in
 
