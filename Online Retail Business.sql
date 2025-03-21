@@ -288,7 +288,16 @@ where TotalAmount >45
 
 --Query 16: List products along with the number of orders they appear in
 
+Select OrderItemID, OI.OrderID, C.CustomerID, FirstName+' ' +LastName as CustomerName, OI.ProductID, ProductName, CategoryName, Quantity, OrderDate, P.Price
+from Products P
+Join Orderitems OI On P.ProductID = OI.ProductID
+Join Orders O On O.OrderID = OI.OrderID
+Join Customers C on C.CustomerID = O.CustomerID
+Join Categories CA on CA.CategoryID = P.CategoryID
+
 --Query 17: Find the top 3 most frequently ordered products
+
+
 
 --Query 18: Calculate the total number of customers from each country
 
