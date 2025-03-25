@@ -297,11 +297,36 @@ Join Categories CA on CA.CategoryID = P.CategoryID
 
 --Query 17: Find the top 3 most frequently ordered products
 
+Select Top 3 OI.ProductID, ProductName, COUNT(OI.ProductID) Times_Sold
+from Products P
+Join OrderItems OI on P.ProductID = OI.ProductID
+Group by OI.ProductID, ProductName
+order by Times_Sold desc;
 
 
 --Query 18: Calculate the total number of customers from each country
 
+Select Country, count(Country) as Total_People_Country
+from Customers
+Group by Country
+Order by Total_People_Country desc;
+
+
 --Query 19: Retrieve the list of customers along with their total spending
 
+Select O.CustomerID,  FirstName+' ' +LastName as CustomerName, TotalAmount
+from Orders O
+Join Customers C On C.CustomerID = O.CustomerID
 
 --Query 20: List orders with more than a specified number of items (e.g., 5 items)
+
+Select * from
+(Select OI.OrderID, O.CustomerID, FirstName+' ' +LastName as CustomerName, Count(ProductID) as Total_Items
+from OrderItems OI
+Join Orders O on O.OrderId = OI.OrderID
+Join Customers C on C.CustomerID = O.CustomerID
+Group By OI.OrderID, O.CustomerID, FirstName+' ' +LastName ) A
+where Total_Items>1
+Order By Total_Items desc
+
+
